@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pong Breaker - Modern Gaming Experience</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="game-container">
+      <!-- Header Section -->
+      <header class="header">
+        <div class="header-content">
+          <h1 class="game-title">PONG BREAKER</h1>
+          <div class="user-info">
+            <div class="user-welcome">
+              Welcome, <span class="username">Noob</span>
+            </div>
+            <div class="timestamp" id="currentTime">2025-07-24 17:10:07</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Game Controls -->
+      <div class="game-controls">
+        <div class="control-group">
+          <label for="difficulty">Difficulty</label>
+          <select id="difficulty">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+            <option value="insane">Insane</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="gameMode">Game Mode</label>
+          <select id="gameMode">
+            <option value="classic">Classic Pong</option>
+            <option value="breaker" selected>Pong Breaker</option>
+            <option value="chaos">Chaos Mode</option>
+          </select>
+        </div>
+
+        <div class="action-buttons">
+          <button id="pauseBtn" class="btn btn-secondary" disabled>
+            ⏸ Pause
+          </button>
+          <button id="fullscreenBtn" class="btn btn-outline">
+            ⛶ Fullscreen
+          </button>
+        </div>
+      </div>
+
+      <!-- Score Dashboard -->
+      <div class="score-dashboard">
+        <div class="score-card player-card">
+          <div class="score-header">
+            <div class="player-avatar">👤</div>
+            <div class="player-name">Player</div>
+          </div>
+          <div class="score-value" id="playerScore">0</div>
+          <div class="score-meta" id="playerStreak">Lives: 3</div>
+        </div>
+
+        <div class="game-status-panel">
+          <div class="status-text" id="gameStatus">Ready to Play</div>
+          <div class="game-timer" id="gameTimer">00:00</div>
+          <div class="quick-stats">
+            <span class="stat">Balls: <strong id="ballCount">1</strong></span>
+            <span class="stat">Bricks: <strong id="brickCount">0</strong></span>
+          </div>
+        </div>
+
+        <div class="score-card ai-card">
+          <div class="score-header">
+            <div class="player-avatar">🤖</div>
+            <div class="player-name">AI</div>
+          </div>
+          <div class="score-value" id="aiScore">0</div>
+          <div class="score-meta" id="aiStreak">Streak: 0</div>
+        </div>
+      </div>
+
+      <!-- Game Canvas Container -->
+      <div class="canvas-container">
+        <canvas id="pongCanvas" width="800" height="500"></canvas>
+
+        <!-- Game Controls Overlay -->
+        <div class="game-overlay-controls" id="gameOverlayButtons">
+          <button id="startBtn" class="game-btn primary-btn">
+            <span class="btn-icon">🚀</span>
+            <span class="btn-label">Start Game</span>
+          </button>
+          <button id="resetBtn" class="game-btn secondary-btn">
+            <span class="btn-icon">🔄</span>
+            <span class="btn-label">Reset</span>
+          </button>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div class="game-overlay" id="gameOverlay">
+          <div class="overlay-content">
+            <h2 id="overlayTitle">Game Paused</h2>
+            <p id="overlayMessage">Click Resume to continue</p>
+            <div class="overlay-stats" id="overlayStats"></div>
+            <div class="overlay-actions">
+              <button id="restartBtn" class="game-btn restart-btn">
+                <span class="btn-icon">🎮</span>
+                <span class="btn-label">Play Again</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Countdown Display -->
+        <div class="countdown-display" id="countdown">3</div>
+
+        <!-- Active Power-ups -->
+        <div class="powerups-panel" id="powerupDisplay">
+          <div class="powerups-list" id="activePowerups"></div>
+        </div>
+      </div>
+
+      <!-- Game Information Grid -->
+      <div class="info-grid">
+        <div class="info-card controls-card">
+          <h3 class="card-title">🎮 Controls & Modes</h3>
+          <div class="card-content">
+            <div class="control-item">
+              <span class="control-key">Mouse</span>
+              <span class="control-desc">Move left paddle</span>
+            </div>
+            <div class="control-item">
+              <span class="control-key">Space</span>
+              <span class="control-desc">Pause/Resume</span>
+            </div>
+            <div class="control-item">
+              <span class="control-key">R</span>
+              <span class="control-desc">Reset game</span>
+            </div>
+            <div class="mode-info">
+              <p>
+                <strong>Classic:</strong> Traditional pong with infinite scoring
+              </p>
+              <p><strong>Breaker:</strong> Destroy bricks with limited lives</p>
+              <p>
+                <strong>Chaos:</strong> Multi-ball mayhem with endless bricks
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card stats-card">
+          <h3 class="card-title">📊 Game Statistics</h3>
+          <div class="card-content">
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-label">Ball Speed</span>
+                <span class="stat-value" id="ballSpeedDisplay">5</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">AI Speed</span>
+                <span class="stat-value" id="aiSpeedDisplay">4</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Bricks Destroyed</span>
+                <span class="stat-value" id="bricksDestroyed">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Power-ups Collected</span>
+                <span class="stat-value" id="powerupsCollected">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Total Hits</span>
+                <span class="stat-value" id="totalHits">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Games Played</span>
+                <span class="stat-value" id="gamesPlayed">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card powerups-card">
+          <h3 class="card-title">⚡ Power-up Guide</h3>
+          <div class="card-content">
+            <div class="powerup-list">
+              <div class="powerup-item">
+                <span class="powerup-icon">🔴</span>
+                <span class="powerup-name">Multi-Ball</span>
+                <span class="powerup-desc">Spawns extra balls</span>
+              </div>
+              <div class="powerup-item">
+                <span class="powerup-icon">🟠</span>
+                <span class="powerup-name">Speed Boost</span>
+                <span class="powerup-desc">Increases ball speed</span>
+              </div>
+              <div class="powerup-item">
+                <span class="powerup-icon">🟡</span>
+                <span class="powerup-name">Paddle Extend</span>
+                <span class="powerup-desc">Makes paddle bigger</span>
+              </div>
+              <div class="powerup-item">
+                <span class="powerup-icon">🟢</span>
+                <span class="powerup-name">Life Up</span>
+                <span class="powerup-desc">Gain extra life</span>
+              </div>
+              <div class="powerup-item">
+                <span class="powerup-icon">🔵</span>
+                <span class="powerup-name">Freeze AI</span>
+                <span class="powerup-desc">Stops AI movement</span>
+              </div>
+              <div class="powerup-item">
+                <span class="powerup-icon">🟣</span>
+                <span class="powerup-name">Score Bonus</span>
+                <span class="powerup-desc">Instant 500 points</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievement Toast Container -->
+      <div class="achievement-container" id="achievementContainer"></div>
+    </div>
+
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
